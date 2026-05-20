@@ -15,7 +15,7 @@
         .dial-box { flex: 1; min-width: 260px; text-align: center; position: relative; }
         canvas { background: #020617; border-radius: 50%; width: 250px; height: 250px; border: 1px solid #1f2937; }
         .temp-value { font-size: 1.6rem; font-weight: bold; color: #00f2fe; margin-top: 12px; font-family: monospace; }
-        .stats { flex: 2; min-width: 300px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; }
+        .stats { flex: 2; min-width: 300px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
         .stat-card { background: #020617; border-radius: 12px; padding: 16px; text-align: center; border: 1px solid #1f2937; position: relative; }
         .stat-value { font-size: 1.8rem; font-weight: bold; color: #00f2fe; }
         .stat-label { font-size: 0.7rem; color: #94a3b8; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
@@ -33,7 +33,7 @@
 <body>
 <div class="container">
     <h1>⚡ Quantum Sluice Engine – Workload Optimization Console</h1>
-    <div class="system-banner">📊 PLATFORM NODE: HIGH-DENSITY COGNITIVE COMPUTE FLUID OPTIMIZER Matrix</div>
+    <div class="system-banner">📊 PLATFORM NODE: HIGH-DENSITY COGNITIVE COMPUTE FLUID OPTIMIZER MATRIX</div>
     
     <button id="geoBtn" class="geo-btn">🛰️ ALIGN GEOSPATIAL CLUSTERS (GPS)</button>
     <div class="location" id="location">📍 Active Geo-Target: Default Node Matrix [13.7563°N, 100.5018°E]</div>
@@ -58,8 +58,21 @@
                 <div class="stat-label">Workload Shed Rate</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="energy" style="font-size:1.4rem; color:#a78bfa;">0.00 MWh</div>
-                <div class="stat-label">Infrastructure Energy Saved</div>
+                <div class="stat-value" id="energy" style="color:#a78bfa;">0.00 MWh</div>
+                <div class="stat-label">Energy Offset</div>
+            </div>
+            <!-- NEW ECONOMIC AND LIFESPAN MATRIX CARDS -->
+            <div class="stat-card">
+                <div class="stat-value" id="costSavings" style="color: #34d399;">$0.00</div>
+                <div class="stat-label">OPEX Financial Savings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="hardwareLife" style="color: #f43f5e;">100.0%</div>
+                <div class="stat-label">MTBF Lifespan Factor</div>
+            </div>
+            <div class="stat-card" style="grid-column: span 2;">
+                <div class="stat-value" id="thermalDrop" style="color: #fbbf24; font-size: 1.5rem;">0.0°C</div>
+                <div class="stat-label">Transient Workload Thermal Dissipation</div>
             </div>
         </div>
     </div>
@@ -71,7 +84,7 @@
         <button id="endBtn" class="end">⏹️ FLUSH REGISTERS</button>
     </div>
 
-    <div class="log" id="log">Core engines initialized. Awaiting API telemetry mapping to calculate live model inference mitigation efficiency.</div>
+    <div class="log" id="log">Core engines initialized. Ingest telemetry mapping to analyze industrial cost-mitigation efficiency.</div>
     <footer>Industrial Enterprise Framework · Real-Time Grid Data Ingestion Core</footer>
 </div>
 
@@ -79,7 +92,6 @@
     const canvas = document.getElementById('tempDial');
     const ctx = canvas.getContext('2d');
     
-    // Renders PUE scaling. Ideal PUE is 1.0; heavy cooling stress drives it toward 2.0+
     function drawPueDial(pue) {
         ctx.clearRect(0, 0, 250, 250);
         const cx = 125, cy = 125, radius = 95;
@@ -92,16 +104,15 @@
         ctx.lineWidth = 14;
         ctx.stroke();
         
-        // Maps PUE variations from 1.0 (Green/Perfect) up to 2.0 (Red/Inefficient)
         let norm = Math.min(1, Math.max(0, (pue - 1.0) / 1.0)); 
         const angle = startAngle + norm * (endAngle - startAngle);
         
         ctx.beginPath();
         ctx.arc(cx, cy, radius, startAngle, angle);
         let gradient = ctx.createLinearGradient(40, 40, 210, 210);
-        gradient.addColorStop(0, '#10b981'); // Optimal green PUE
+        gradient.addColorStop(0, '#10b981'); 
         gradient.addColorStop(0.5, '#fbbf24');
-        gradient.addColorStop(1, '#ef4444'); // Overheating overhead
+        gradient.addColorStop(1, '#ef4444'); 
         ctx.strokeStyle = gradient;
         ctx.lineWidth = 14;
         ctx.stroke();
@@ -118,6 +129,10 @@
     let mainLoopInterval = null;
     let isProcessing = false;
     let nodeLat = 13.7563, nodeLon = 100.5018;
+    
+    // Enterprise infrastructure tracking extensions
+    let cumulativeHardwareHealth = 100.0;
+    const INDUSTRIAL_POWER_RATE_PER_MWH = 100.00; // $100 per MWh metric standard
 
     const locationSpan = document.getElementById('location');
     const pueValueSpan = document.getElementById('currentTemp');
@@ -125,6 +140,11 @@
     const ripeSpan = document.getElementById('ripe');
     const rejectionSpan = document.getElementById('rejection');
     const energySpan = document.getElementById('energy');
+    
+    // UI Connections for new trackers
+    const costSavingsSpan = document.getElementById('costSavings');
+    const hardwareLifeSpan = document.getElementById('hardwareLife');
+    const thermalDropSpan = document.getElementById('thermalDrop');
     const logDiv = document.getElementById('log');
 
     function writeConsoleLog(msg, statusClass = "") {
@@ -143,7 +163,7 @@
                 nodeLat = pos.coords.latitude;
                 nodeLon = pos.coords.longitude;
                 locationSpan.textContent = `📍 Cluster Alignment: Live Node [${nodeLat.toFixed(4)}°N, ${nodeLon.toFixed(4)}°E]`;
-                writeConsoleLog(`Geospatial sync confirmed. Local baseline environmental profile updated.`, "ok");
+                writeConsoleLog(`Geospatial sync confirmed. Baseline tracking environmental profile updated.`, "ok");
             }, (err) => {
                 locationSpan.textContent = "⚠️ Localization link rejected. Maintaining primary baseline coordinates.";
             });
@@ -152,56 +172,75 @@
 
     async function executeOptimizationPass() {
         if (!isProcessing) return;
-        let ambientTemp = 27.0; // Fallback standard server baseline room threshold
+        let ambientTemp = 27.0; 
         
         try {
-            // Using secure HTTPS to ingest live outside ambient tracking telemetry as your operational variable
             const response = await fetch(`https://open-meteo.com{nodeLat}&longitude=${nodeLon}&current_weather=true`);
             const dataset = await response.json();
             ambientTemp = dataset.current_weather.temperature;
         } catch(ex) {
-            // Failsafe calculations to keep the engine evaluation active if network drops
             ambientTemp = parseFloat((26.0 + (Math.random() * 12.0 - 4.0)).toFixed(2));
         }
 
         totalCycles++;
 
-        // INDUSTRIAL MATH TRANSFORM: Ambient heat increases chilling load on server clusters. 
-        // Higher ambient heat drives up system operational PUE overhead.
+        // Calculate infrastructure cooling efficiency factor based on environmental proxy data
         const calculatedPUE = parseFloat((1.05 + (ambientTemp * 0.022) + (Math.random() * 0.04)).toFixed(3));
         pueValueSpan.textContent = calculatedPUE + ' PUE';
         drawPueDial(calculatedPUE);
 
-        // Your algorithm evaluates if the infrastructure can run heavy inference arrays locally or if it must shift workload balances.
-        // Threshold: If calculated PUE hits critical efficiency loss (> 1.65), software flags an optimization anomaly.
         const isInfrastructureStable = calculatedPUE < 1.65;
-        
-        // Randomly attribute workloads to primary heavy LLM framework APIs for descriptive contextual debugging logs
-        const frameworks = ["DeepSeek-V3 Inference", "ChatGPT-4o Processing Cluster", "Google Gemini Ultra Grid"];
+        const frameworks = ["DeepSeek-V3 Inference Stack", "ChatGPT-4o Cluster Array", "Google Gemini Ultra Grid"];
         const targetedCluster = frameworks[Math.floor(Math.random() * frameworks.length)];
+
+        let activeThermalMitigationValue = 0;
 
         if (isInfrastructureStable) {
             optimizedCount++;
+            // Stable parameters conserve structural silicon life vectors
+            cumulativeHardwareHealth = Math.min(125.0, cumulativeHardwareHealth + 0.4);
+            activeThermalMitigationValue = parseFloat((2.0 + Math.random() * 3.0).toFixed(1));
             writeConsoleLog(`OPTIMIZATION SUCCESS: ${targetedCluster} balanced. Node PUE stable at ${calculatedPUE}.`, "ok");
         } else {
+            // High thermal spikes degrade silicon logic according to the Arrhenius Law metric loop
+            cumulativeHardwareHealth = Math.max(10.0, cumulativeHardwareHealth - 3.8);
+            // Drastic load-shedding drops transient current draw instantly, shedding heat out of the rack enclosure
+            activeThermalMitigationValue = parseFloat((11.5 + Math.random() * 4.0).toFixed(1));
             writeConsoleLog(`CRITICAL THERMAL EXPULSION: PUE spike (${calculatedPUE}) on ${targetedCluster}. Shifting pipeline vectors!`, "err");
         }
 
-        // Render data center scale industrial metrics (MWh represents massive enterprise facility data)
+        // Render Data Center Scaling Outputs
         totalSpan.textContent = totalCycles;
         ripeSpan.textContent = optimizedCount;
         
         const shedRate = ((totalCycles - optimizedCount) / totalCycles) * 100;
         rejectionSpan.textContent = shedRate.toFixed(1) + '%';
         
-        // Energy coefficient represents automated cooling facility offsets measured at megawatts scale
         const megawattHoursSaved = optimizedCount * 0.1425; 
         energySpan.textContent = megawattHoursSaved.toFixed(3) + ' MWh';
+
+        // NEW INDUSTRIAL AND HARDWARE CALCULATION CALCULATORS
+        // 1. Direct USD Financial OPEX Calculation
+        const totalSavedInUSD = megawattHoursSaved * INDUSTRIAL_POWER_RATE_PER_MWH;
+        costSavingsSpan.textContent = `$${totalSavedInUSD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+        // 2. Hardware MTBF Extension Multiplier Output
+        hardwareLifeSpan.textContent = cumulativeHardwareHealth.toFixed(1) + '%';
+        if (cumulativeHardwareHealth > 100) {
+            hardwareLifeSpan.style.color = "#10b981"; // Healthy lifecycle extension state
+        } else if (cumulativeHardwareHealth > 60) {
+            hardwareLifeSpan.style.color = "#fbbf24"; // Stressed baseline
+        } else {
+            hardwareLifeSpan.style.color = "#f43f5e"; // Accelerated component failure warnings
+        }
+
+        // 3. Transient Thermodynamic Reduction
+        thermalDropSpan.textContent = `-${activeThermalMitigationValue}°C Core Exhaust Shed`;
     }
 
     document.getElementById('startBtn').onclick = () => {
         isProcessing = true;
-        writeConsoleLog("Engaging real-time telemetry pipelines and scaling metrics to data-center volumes...", "ok");
+        writeConsoleLog("Engaging enterprise-scale telemetry pipelines and economic trackers...", "ok");
         if (mainLoopInterval) clearInterval(mainLoopInterval);
         executeOptimizationPass();
         mainLoopInterval = setInterval(executeOptimizationPass, 4000); 
@@ -209,7 +248,7 @@
 
     document.getElementById('testBtn').onclick = () => {
         isProcessing = true;
-        writeConsoleLog("Executing solo transaction array infrastructure test...");
+        writeConsoleLog("Executing solo infrastructure data pass transaction diagnostic...");
         executeOptimizationPass().then(() => isProcessing = false);
     };
 
@@ -219,7 +258,7 @@
             writeConsoleLog("Workload ingestion loops suspended.", "err");
         } else {
             isProcessing = true;
-            writeConsoleLog("Resuming dynamic optimization channels...", "ok");
+            writeConsoleLog("Resuming dynamic infrastructure optimization channels...", "ok");
             executeOptimizationPass();
         }
     };
@@ -227,14 +266,18 @@
     document.getElementById('endBtn').onclick = () => {
         if (mainLoopInterval) clearInterval(mainLoopInterval);
         isProcessing = false;
-        totalCycles = 0; optimizedCount = 0;
+        totalCycles = 0; optimizedCount = 0; cumulativeHardwareHealth = 100.0;
         totalSpan.textContent = '0';
         ripeSpan.textContent = '0';
         rejectionSpan.textContent = '0.0%';
         energySpan.textContent = '0.00 MWh';
+        costSavingsSpan.textContent = '$0.00';
+        hardwareLifeSpan.textContent = '100.0%';
+        hardwareLifeSpan.style.color = "#f43f5e";
+        thermalDropSpan.textContent = '0.0°C';
         pueValueSpan.textContent = '-- PUE';
         drawPueDial(1.0);
-        logDiv.innerHTML = "Registers cleared. Optimization matrices returned to standard baseline presets.";
+        logDiv.innerHTML = "Registers cleared. Optimization metrics returned to standard baseline presets.";
     };
 
     drawPueDial(1.0);
