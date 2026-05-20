@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Sluice – Live Weather Dashboard</title>
+    <title>Quantum Sluice – NASA Climate Command</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #0a0f1e; font-family: 'Courier New', monospace; color: #e0e0e0; padding: 20px; }
@@ -13,10 +13,10 @@
         .flex { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
         .dial-box { flex: 1; min-width: 260px; text-align: center; }
         canvas { background: #010409; border-radius: 50%; width: 260px; height: 260px; }
-        .temp-value { font-size: 2rem; font-weight: bold; color: #00f2fe; margin-top: 12px; }
+        .temp-value { font-size: 1.8rem; font-weight: bold; color: #00f2fe; margin-top: 12px; }
         .stats { flex: 2; min-width: 300px; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
         .stat-card { background: #010409; border-radius: 16px; padding: 16px; text-align: center; border: 1px solid #2d3748; }
-        .stat-value { font-size: 2rem; font-weight: bold; color: #00f2fe; }
+        .stat-value { font-size: 1.8rem; font-weight: bold; color: #00f2fe; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .stat-label { font-size: 0.7rem; color: #94a3b8; margin-top: 8px; }
         .log { background: #010409; border-radius: 16px; padding: 16px; height: 250px; overflow-y: auto; font-family: monospace; font-size: 0.8rem; border: 1px solid #2d3748; margin: 24px 0; }
         .button-bar { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0; }
@@ -31,36 +31,35 @@
 </head>
 <body>
 <div class="container">
-    <h1>⚡ Quantum Sluice – Live Weather Dashboard</h1>
-    <div class="location" id="location">📍 Bangkok, Thailand</div>
+    <h1>⚡ Quantum Sluice – NASA EONET Climate Node</h1>
+    <div class="location" id="location">📍 Loading Geospatial Stream...</div>
 
     <div class="flex">
         <div class="dial-box">
             <canvas id="tempDial" width="260" height="260"></canvas>
-            <div class="temp-value" id="currentTemp">-- °C</div>
+            <div class="temp-value" id="currentTemp">-- Events</div>
         </div>
         <div class="stats">
-            <div class="stat-card"><div class="stat-value" id="total">0</div><div class="stat-label">Total Samples</div></div>
-            <div class="stat-card"><div class="stat-value" id="ripe">0</div><div class="stat-label">RIPE Samples</div></div>
-            <div class="stat-card"><div class="stat-value" id="rejection">0%</div><div class="stat-label">Rejection Rate</div></div>
-            <div class="stat-card"><div class="stat-value" id="energy">0 kWh</div><div class="stat-label">Energy Saved</div></div>
+            <div class="stat-card"><div class="stat-value" id="total">0</div><div class="stat-label">API Queries</div></div>
+            <div class="stat-card"><div class="stat-value" id="ripe">0</div><div class="stat-label">Stable Safe Cycles</div></div>
+            <div class="stat-card"><div class="stat-value" id="rejection">0%</div><div class="stat-label">Anomalous Spike Rate</div></div>
+            <div class="stat-card"><div class="stat-value" id="energy" style="font-size:1.1rem;">--</div><div class="stat-label">Most Recent Active Event</div></div>
         </div>
     </div>
 
     <div class="button-bar">
-        <button id="startBtn" class="start">▶ START</button>
-        <button id="testBtn" class="test">🔍 TEST</button>
-        <button id="resumeBtn" class="resume">⏸️ RESUME</button>
-        <button id="endBtn" class="end">⏹️ END</button>
+        <button id="startBtn" class="start">▶ START LIVE FEED</button>
+        <button id="testBtn" class="test">🔍 SNAPSHOT TEST</button>
+        <button id="resumeBtn" class="resume">⏸️ PAUSE/RESUME</button>
+        <button id="endBtn" class="end">⏹️ RESET</button>
     </div>
 
-    <div class="log" id="log">Ready. Click START to begin.</div>
-    <footer>Quantum‑inspired filter · Ternary states · Recursive collapse · State memory</footer>
+    <div class="log" id="log">System Ready. Click START to handshake with live NASA streams.</div>
+    <footer>NASA EONET API Integration · Ternary States · Recursive Collapse · Real-Time Satellite Data</footer>
 </div>
 
 <script>
-    // ----- Quantum‑inspired isRipe() (recursive, ternary, stateful) -----
-    // Convert integer to ternary state (-1,0,+1) based on cycle
+    // ----- Your Quantum-inspired logic evaluated over live API anomalies -----
     function intToTernary(value, cycle) {
         const mod = (value + cycle) % 3;
         if (mod === 0) return -1;
@@ -68,46 +67,35 @@
         return 1;
     }
 
-    // Measure (collapse) – adds noise and returns amplitude
     function measure(state, amplitude, cycle) {
-        const noise = Math.random() * 0.05; // small decoherence
+        const noise = Math.random() * 0.05; 
         return amplitude * (1 - noise) + (state / 3);
     }
 
-    // Recursive quantum filter
     function isRipeQuantum(value, depth, maxDepth, amplitudes) {
-        if (depth === 0) return true; // survived all cycles
-        
+        if (depth === 0) return true; 
         const cycle = maxDepth - depth;
         const state = intToTernary(value, cycle);
         let amplitude = (amplitudes && amplitudes[depth-1]) ? amplitudes[depth-1] : 1.0;
-        
         const measured = measure(state, amplitude, cycle);
-        
-        // store amplitude for next cycle (state memory)
         if (amplitudes) amplitudes[depth-1] = measured;
-        
-        // collapse: if amplitude too low, reject immediately
         if (measured < 0.2) return false;
-        
-        // recursive call
         return isRipeQuantum(value, depth - 1, maxDepth, amplitudes);
     }
 
-    // Wrapper – creates fresh context for each value
-    function isRipe(value) {
+    function runQuantumFilter(value) {
         const QUANTUM_CYCLES = 8;
         let amplitudes = new Array(QUANTUM_CYCLES).fill(1.0);
         return isRipeQuantum(value, QUANTUM_CYCLES, QUANTUM_CYCLES, amplitudes);
     }
 
-    // ----- Round Dial Drawing -----
+    // ----- Needle Dial Adjustments for Event Volumes -----
     const canvas = document.getElementById('tempDial');
     const ctx = canvas.getContext('2d');
     const width = 260, height = 260;
     canvas.width = width; canvas.height = height;
 
-    function drawDial(temp) {
+    function drawDial(eventCount) {
         ctx.clearRect(0, 0, width, height);
         const cx = width/2, cy = height/2;
         const radius = 110;
@@ -120,14 +108,17 @@
         ctx.lineWidth = 18;
         ctx.stroke();
         
-        let norm = Math.min(1, Math.max(0, (temp - 0) / 40));
+        // Maps 0 up to 100 global severe weather/fire incidents across the dial gauge
+        let norm = Math.min(1, Math.max(0, eventCount / 100));
         const angle = startAngle + norm * (endAngle - startAngle);
         ctx.beginPath();
         ctx.arc(cx, cy, radius, startAngle, angle);
         let gradient = ctx.createLinearGradient(cx-80, cy-80, cx+80, cy+80);
-        if (norm < 0.5) gradient.addColorStop(0, '#00f2fe');
-        else gradient.addColorStop(0, '#fbbf24');
-        if (norm > 0.8) gradient.addColorStop(1, '#ef4444');
+        
+        if (norm < 0.4) gradient.addColorStop(0, '#00f2fe');
+        else if (norm < 0.75) gradient.addColorStop(0, '#fbbf24');
+        else gradient.addColorStop(0, '#ef4444');
+        
         ctx.strokeStyle = gradient;
         ctx.stroke();
         
@@ -145,29 +136,24 @@
         ctx.arc(cx, cy, 8, 0, 2*Math.PI);
         ctx.fillStyle = '#00f2fe';
         ctx.fill();
-        ctx.fillStyle = '#010409';
-        ctx.beginPath();
-        ctx.arc(cx, cy, 4, 0, 2*Math.PI);
-        ctx.fill();
         
         ctx.fillStyle = '#94a3b8';
         ctx.font = 'bold 10px monospace';
-        ctx.fillText('-10°C', cx-80, cy+5);
-        ctx.fillText('40°C', cx+65, cy+5);
+        ctx.fillText('0 BASE', cx-80, cy+5);
+        ctx.fillText('100 MAX', cx+55, cy+5);
     }
 
-    // ----- Dashboard State -----
-    let total = 0, ripeCount = 0;
-    let interval = null;
-    let running = false;
-    let paused = false;
+    // ----- Infrastructure State Tracker -----
+    let totalQueries = 0, stableCycles = 0;
+    let streamInterval = null;
+    let isRunning = false;
 
     const locationSpan = document.getElementById('location');
-    const tempSpan = document.getElementById('currentTemp');
+    const eventSpan = document.getElementById('currentTemp');
     const totalSpan = document.getElementById('total');
     const ripeSpan = document.getElementById('ripe');
     const rejectionSpan = document.getElementById('rejection');
-    const energySpan = document.getElementById('energy');
+    const telemetryLabel = document.getElementById('energy');
     const logDiv = document.getElementById('log');
 
     function addLog(msg) {
@@ -175,81 +161,104 @@
         p.textContent = new Date().toLocaleTimeString() + ' > ' + msg;
         logDiv.appendChild(p);
         p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        while (logDiv.children.length > 100) logDiv.removeChild(logDiv.firstChild);
+        while (logDiv.children.length > 50) logDiv.removeChild(logDiv.firstChild);
     }
 
-    function updateUI() {
-        totalSpan.textContent = total;
-        ripeSpan.textContent = ripeCount;
-        const rate = total === 0 ? 0 : (1 - ripeCount / total) * 100;
-        rejectionSpan.textContent = rate.toFixed(2) + '%';
-        energySpan.textContent = (total * 0.00000001).toFixed(8) + ' kWh';
+    function updateMetricsUI() {
+        totalSpan.textContent = totalQueries;
+        ripeSpan.textContent = stableCycles;
+        const anomalyRate = totalQueries === 0 ? 0 : (1 - stableCycles / totalQueries) * 100;
+        rejectionSpan.textContent = anomalyRate.toFixed(2) + '%';
     }
 
-    async function fetchWeather() {
-        if (!running || paused) return;
+    // ----- Live NASA Data Fetch -----
+    async function pullNasaData Pipeline() {
+        if (!isRunning) return;
         try {
-            const url = 'https://api.open-meteo.com/v1/forecast?latitude=13.736717&longitude=100.523186&current_weather=true';
-            const response = await fetch(url);
-            const data = await response.json();
-            const temp = data.current_weather.temperature;
-            tempSpan.textContent = temp + ' °C';
-            drawDial(temp);
+            locationSpan.textContent = "🌍 Telemetry Node: Active Tracking (NASA GSFC)";
             
-            const scaled = Math.floor(temp * 100000);
-            total++;
-            const ripe = isRipe(scaled);
-            if (ripe) ripeCount++;
-            updateUI();
-            addLog(`${ripe ? '🎯 RIPE' : '❌ REJECTED'} temperature: ${temp}°C (scaled: ${scaled})`);
-        } catch(e) {
-            addLog('⚠️ Weather API error: ' + e.message);
+            // Querying live open events database from NASA EONET v3
+            const response = await fetch('https://nasa.gov');
+            if (!response.ok) throw new Error("NASA Core Gateway rejected handshake");
+            const data = await response.json();
+            
+            const eventsArray = data.events || [];
+            const activeEventCount = eventsArray.length;
+            
+            eventSpan.textContent = activeEventCount + ' Events';
+            drawDial(activeEventCount);
+            
+            totalQueries++;
+            
+            // Inject the data variance directly inside your custom evaluation math
+            const filterEvaluator = runQuantumFilter(activeEventCount * 77); 
+            if (filterEvaluator) {
+                stableCycles++;
+            }
+            
+            if(activeEventCount > 0) {
+                telemetryLabel.textContent = eventsArray[0].title;
+                addLog(`📡 INCOMING PAYLOAD: ${activeEventCount} planet conditions active. Recent: ${eventsArray[0].title}`);
+                addLog(`🌀 FILTER ARTIFACT: Node status evaluated as [${filterEvaluator ? '💚 STABLE MATCH' : '💥 ANOMALY WARNING'}]`);
+            } else {
+                telemetryLabel.textContent = "Quiet Earth";
+                addLog("📡 INCOMING PAYLOAD: 0 catastrophic events currently logged on planet.");
+            }
+            
+            updateMetricsUI();
+        } catch (err) {
+            addLog('⚠️ API Stream Drop: ' + err.message);
         }
     }
 
+    // ----- Control Matrix Mappings -----
     function startStream() {
-        if (interval) clearInterval(interval);
-        running = true;
-        paused = false;
-        interval = setInterval(fetchWeather, 10000);
-        addLog('✅ Quantum stream started (every 10 seconds).');
-        fetchWeather();
+        if (streamInterval) clearInterval(streamInterval);
+        isRunning = true;
+        addLog('📡 Handshaking with NASA Open Data servers...');
+        pullNasaDataPipeline();
+        streamInterval = setInterval(pullNasaDataPipeline, 15000); // NASA updates every few minutes; 15s is safe for tracking
     }
 
     function testOnce() {
-        if (interval) clearInterval(interval);
-        running = false;
-        paused = false;
-        fetchWeather().then(() => addLog('🔍 Single quantum test completed.'));
+        isRunning = true;
+        addLog('🔍 Querying singular satellite dataset asset snapshot...');
+        pullNasaDataPipeline().then(() => {
+            isRunning = false;
+            addLog('🔍 Single verification pass completed.');
+        });
     }
 
-    function resumeStream() {
-        if (!running || paused) {
-            paused = false;
-            running = true;
-            if (interval) clearInterval(interval);
-            interval = setInterval(fetchWeather, 10000);
-            addLog('▶️ Quantum stream resumed.');
-            fetchWeather();
+    function togglePause() {
+        if (isRunning) {
+            isRunning = false;
+            if (streamInterval) clearInterval(streamInterval);
+            addLog('⏸️ Telemetry feed paused safely.');
+        } else {
+            isRunning = true;
+            addLog('▶️ Reconnecting live metrics stream...');
+            pullNasaDataPipeline();
+            streamInterval = setInterval(pullNasaDataPipeline, 15000);
         }
     }
 
-    function endStream() {
-        if (interval) clearInterval(interval);
-        running = false;
-        paused = false;
-        total = 0; ripeCount = 0;
-        updateUI();
-        tempSpan.textContent = '-- °C';
+    function clearStream() {
+        if (streamInterval) clearInterval(streamInterval);
+        isRunning = false;
+        totalQueries = 0; 
+        stableCycles = 0;
+        updateMetricsUI();
+        eventSpan.textContent = '-- Events';
+        telemetryLabel.textContent = '--';
+        locationSpan.textContent = '📍 Off-line';
         drawDial(0);
-        logDiv.innerHTML = '⏹️ Stream ended. Ready. Click START to begin.';
-        addLog('Stream reset.');
+        logDiv.innerHTML = '⏹️ Mainframe detached. System flushed and ready.';
     }
 
     document.getElementById('startBtn').onclick = startStream;
     document.getElementById('testBtn').onclick = testOnce;
-    document.getElementById('resumeBtn').onclick = resumeStream;
-    document.getElementById('endBtn').onclick = endStream;
+    document.getElementById('resumeBtn').onclick = togglePause;
+    document.getElementById('endBtn').onclick = clearStream;
 
     drawDial(0);
 </script>
