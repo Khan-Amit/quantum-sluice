@@ -1,19 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Sluice – Solar Micro-Grid PUE Optimizer</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #020617; font-family: 'Courier New', monospace; color: #f3f4f6; padding: 20px; }
-        .container { max-width: 1250px; margin: 0 auto; background: #0b1329; border-radius: 16px; padding: 24px; border: 2px solid #1f2937; box-shadow: 0 0 35px rgba(16, 185, 129, 0.15); }
-        h1 { color: #10b981; margin-bottom: 4px; font-size: 1.4rem; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
-        .system-banner { background: #022c22; border: 1px dashed #10b981; padding: 8px; font-size: 0.8rem; text-align: center; color: #34d399; margin-bottom: 20px; border-radius: 8px; font-weight: bold; }
-        .location { font-size: 1rem; color: #a1a1aa; margin-bottom: 12px; text-align: center; font-weight: bold; }
-        
-        .profile-selector { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; }
-        .profile-btn { background: #1f2937; border: 1px solid #374151; color: #94a3b8; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: monospace; font-size: 0.8rem; font-weight: bold; transition: 0.2s; }
+1f2937; border: 1px solid #374151; color: #94a3b8; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: monospace; font-size: 0.8rem; font-weight: bold; transition: 0.2s; }
         .profile-btn.active { background: #0f766e; border-color: #00f2fe; color: #ffffff; box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); }
         
         .flex { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: center; }
@@ -36,73 +21,7 @@
         .resume { background: #2563eb; color: white; }
         .end { background: #dc2626; color: white; }
         .geo-btn { background: #0f766e; color: white; width: 100%; margin-bottom: 12px; border-radius: 6px; }
-        footer { text-align: center; margin-top: 20px; font-size: 0.65rem; color: #4b5563; text-transform: uppercase; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1>⚡ Quantum Sluice Engine – Solar & Battery Micro-Grid</h1>
-    <div class="system-banner">☀️ OFF-GRID INFRASTRUCTURE MODE: AUTONOMOUS RENEWABLE BALANCING DISPATCH ENGAGED</div>
-    
-    <div class="profile-selector">
-        <button id="profileAir" class="profile-btn active">💨 CONVENTIONAL AIR-COOLED PROFILE</button>
-        <button id="profileLiquid" class="profile-btn">Direct-to-Chip Liquid Pro</button>
-    </div>
-
-    <button id="geoBtn" class="geo-btn">🛰️ ALIGN MICRO-GRID HARVEST CHANNELS (GPS)</button>
-    <div class="location" id="location">📍 Micro-Grid Position: Baseline Core Terminal [13.7563°N, 100.5018°E]</div>
-
-    <div class="flex">
-        <div class="dial-box">
-            <canvas id="tempDial" width="250" height="250"></canvas>
-            <div class="temp-value" id="currentTemp">-- PUE</div>
-            <div style="font-size:0.65rem; color:#6b7280; text-transform:uppercase; letter-spacing:1px; margin-top:4px;">Power Usage Effectiveness Gauge</div>
-        </div>
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-value" id="total">0</div>
-                <div class="stat-label">Telemetry Cycles (Lifetime)</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="rejection" style="color: #ef4444;">0.0%</div>
-                <div class="stat-label">Autonomous Workload Shed Rate</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="energy" style="color:#a78bfa;">0.00 MWh</div>
-                <div class="stat-label">Lifetime Green Offset</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="costSavings" style="color: #34d399;">$0.00</div>
-                <div class="stat-label">Lifetime OPEX Savings</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-value" id="solarPower" style="color: #fbbf24;">0.0 kW</div>
-                <div class="stat-label">Solar Array Ingress</div>
-                <div class="progress-container"><div id="solarBar" class="progress-bar" style="width: 0%; background: #fbbf24; box-shadow: 0 0 8px #fbbf24;"></div></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="batterySoC" style="color: #10b981;">100%</div>
-                <div class="stat-label">Battery Storage Array (SoC)</div>
-                <div class="progress-container"><div id="batteryBar" class="progress-bar" style="width: 100%;"></div></div>
-            </div>
-            <div class="stat-card" style="grid-column: span 2;">
-                <div class="stat-value" id="thermalDrop" style="color: #00f2fe; font-size: 1.4rem;">0.0°C</div>
-                <div class="stat-label">Transient Workload Thermal Exhaust Shed</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="button-bar">
-        <button id="startBtn" class="start">▶ START GREEN TELEMETRY</button>
-        <button id="testBtn" class="test">🔍 ARRAY PROBE</button>
-        <button id="resumeBtn" class="resume">⏸️ STALL CORES</button>
-        <button id="endBtn" class="end">⏹️ CLEAR STORAGE CACHE</button>
-    </div>
-
-    <div class="log" id="log">Renewable array links synchronized. Press START to coordinate localized solar metrics with deep computing loads.</div>
-    <footer>Industrial Enterprise Framework · Real-Time Grid Data Ingestion Core</footer>
-</div>
+        footer { 
 
 <script>
     const canvas = document.getElementById('tempDial');
