@@ -1,56 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Sluice – AI Infrastructure PUE Optimizer</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #030712; font-family: 'Courier New', monospace; color: #f3f4f6; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; background: #0b1329; border-radius: 16px; padding: 24px; border: 2px solid #1f2937; box-shadow: 0 0 30px rgba(0, 242, 254, 0.15); }
-        h1 { color: #00f2fe; margin-bottom: 4px; font-size: 1.4rem; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
-        .system-banner { background: #111827; border: 1px dashed #3b82f6; padding: 8px; font-size: 0.8rem; text-align: center; color: #3b82f6; margin-bottom: 20px; border-radius: 8px; font-weight: bold; }
-        .location { font-size: 1rem; color: #a1a1aa; margin-bottom: 20px; text-align: center; font-weight: bold; }
-        .flex { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: center; }
-        .dial-box { flex: 1; min-width: 260px; text-align: center; position: relative; }
-        canvas { background: #020617; border-radius: 50%; width: 250px; height: 250px; border: 1px solid #1f2937; }
-        .temp-value { font-size: 1.6rem; font-weight: bold; color: #00f2fe; margin-top: 12px; font-family: monospace; }
-        .stats { flex: 2; min-width: 300px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
-        .stat-card { background: #020617; border-radius: 12px; padding: 16px; text-align: center; border: 1px solid #1f2937; position: relative; }
-        .stat-value { font-size: 1.8rem; font-weight: bold; color: #00f2fe; }
-        .stat-label { font-size: 0.7rem; color: #94a3b8; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .log { background: #020617; border-radius: 12px; padding: 16px; height: 240px; overflow-y: auto; font-family: monospace; font-size: 0.75rem; border: 1px solid #1f2937; margin: 24px 0; color: #34d399; }
-        .button-bar { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 20px 0; }
-        button { border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-family: monospace; font-size: 0.85rem; font-weight: bold; transition: 0.2s; letter-spacing: 1px; }
-        .start { background: #00f2fe; color: #020617; }
-        .test { background: #fbbf24; color: #020617; }
-        .resume { background: #2563eb; color: white; }
-        .end { background: #dc2626; color: white; }
-        .geo-btn { background: #059669; color: white; width: 100%; margin-bottom: 12px; border-radius: 6px; }
-        footer { text-align: center; margin-top: 20px; font-size: 0.65rem; color: #4b5563; text-transform: uppercase; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1>⚡ Quantum Sluice Engine – Workload Optimization Console</h1>
-    <div class="system-banner">📊 PLATFORM NODE: HIGH-DENSITY COGNITIVE COMPUTE FLUID OPTIMIZER MATRIX</div>
-    
-    <button id="geoBtn" class="geo-btn">🛰️ ALIGN GEOSPATIAL CLUSTERS (GPS)</button>
-    <div class="location" id="location">📍 Active Geo-Target: Default Node Matrix [13.7563°N, 100.5018°E]</div>
-
-    <div class="flex">
-        <div class="dial-box">
-            <canvas id="tempDial" width="250" height="250"></canvas>
-            <div class="temp-value" id="currentTemp">-- PUE</div>
-            <div style="font-size:0.65rem; color:#6b7280; text-transform:uppercase; letter-spacing:1px; margin-top:4px;">Power Usage Effectiveness Gauge</div>
-        </div>
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-value" id="total">0</div>
-                <div class="stat-label">Telemetry Cycles</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="ripe" style="color: #10b981;">0</div>
+t-value" id="ripe" style="color: #10b981;">0</div>
                 <div class="stat-label">Optimized Inferences</div>
             </div>
             <div class="stat-card">
@@ -195,7 +143,7 @@
 
         let activeThermalMitigationValue = 0;
 
-        if (isInfrastructureStable) {
+        if (isInfrastructureStable {
             optimizedCount++;
             // Stable parameters conserve structural silicon life vectors
             cumulativeHardwareHealth = Math.min(125.0, cumulativeHardwareHealth + 0.4);
@@ -227,7 +175,7 @@
         // 2. Hardware MTBF Extension Multiplier Output
         hardwareLifeSpan.textContent = cumulativeHardwareHealth.toFixed(1) + '%';
         if (cumulativeHardwareHealth > 100) {
-            hardwareLifeSpan.style.color = "#10b981"; // Healthy lifecycle extension state
+            .style.color = "#10b981"; // Healthy lifecycle extension state
         } else if (cumulativeHardwareHealth > 60) {
             hardwareLifeSpan.style.color = "#fbbf24"; // Stressed baseline
         } else {
@@ -238,49 +186,4 @@
         thermalDropSpan.textContent = `-${activeThermalMitigationValue}°C Core Exhaust Shed`;
     }
 
-    document.getElementById('startBtn').onclick = () => {
-        isProcessing = true;
-        writeConsoleLog("Engaging enterprise-scale telemetry pipelines and economic trackers...", "ok");
-        if (mainLoopInterval) clearInterval(mainLoopInterval);
-        executeOptimizationPass();
-        mainLoopInterval = setInterval(executeOptimizationPass, 4000); 
-    };
-
-    document.getElementById('testBtn').onclick = () => {
-        isProcessing = true;
-        writeConsoleLog("Executing solo infrastructure data pass transaction diagnostic...");
-        executeOptimizationPass().then(() => isProcessing = false);
-    };
-
-    document.getElementById('resumeBtn').onclick = () => {
-        if (isProcessing) {
-            isProcessing = false;
-            writeConsoleLog("Workload ingestion loops suspended.", "err");
-        } else {
-            isProcessing = true;
-            writeConsoleLog("Resuming dynamic infrastructure optimization channels...", "ok");
-            executeOptimizationPass();
-        }
-    };
-
-    document.getElementById('endBtn').onclick = () => {
-        if (mainLoopInterval) clearInterval(mainLoopInterval);
-        isProcessing = false;
-        totalCycles = 0; optimizedCount = 0; cumulativeHardwareHealth = 100.0;
-        totalSpan.textContent = '0';
-        ripeSpan.textContent = '0';
-        rejectionSpan.textContent = '0.0%';
-        energySpan.textContent = '0.00 MWh';
-        costSavingsSpan.textContent = '$0.00';
-        hardwareLifeSpan.textContent = '100.0%';
-        hardwareLifeSpan.style.color = "#f43f5e";
-        thermalDropSpan.textContent = '0.0°C';
-        pueValueSpan.textContent = '-- PUE';
-        drawPueDial(1.0);
-        logDiv.innerHTML = "Registers cleared. Optimization metrics returned to standard baseline presets.";
-    };
-
-    drawPueDial(1.0);
-</script>
-</body>
-</html>
+    document.
