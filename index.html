@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Sluice – Live Weather Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0f1e; font-family: 'Courier New', monospace; color: #e0e0e0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: #0f172a; border-radius: 24px; padding: 24px; border: 1px solid #1e293b; }
+        h1 { color: #00f2fe; margin-bottom: 8px; }
+        .location { font-size: 1.2rem; color: #94a3b8; margin-bottom: 24px; }
+        .flex { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+        .dial-box { flex: 1; min-width: 260px; text-align: center; }
+        canvas { background: #010409; border-radius: 50%; width: 260px; height: 260px; }
+        .temp-value { font-size: 2rem; font-weight: bold; color: #00f2fe; margin-top: 12px; }
+        .stats { flex: 2; min-width: 300px; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+        .stat-card { background: #010409; border-radius: 16px; padding: 16px; text-align: center; border: 1px solid #2d3748; }
+        .stat-value { font-size: 2rem; font-weight: bold; color: #00f2fe; }
+        .stat-label { font-size: 0.7rem; color: #94a3b8; margin-top: 8px; }
+        .log { background: #010409; border-radius: 16px; padding: 16px; height: 250px; overflow-y: auto; font-family: monospace; font-size: 0.8rem; border: 1px solid #2d3748; margin: 24px 0; }
+        .button-bar { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0; }
+        button { background: #1e293b; border: none; color: #94a3b8; padding: 8px 20px; border-radius: 40px; cursor: pointer; font-family: monospace; font-size: 1rem; transition: 0.2s; }
+        button:hover { background: #2d3a5e; color: white; }
+        .start { background: #00f2fe; color: #010409; }
+        .test { background: #fbbf24; color: #010409; }
+        .resume { background: #3b82f6; color: white; }
+        .end { background: #ef4444; color: white; }
+        footer { text-align: center; margin-top: 20px; font-size: 0.7rem; color: #475569; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⚡ Quantum Sluice – Live Weather Dashboard</h1>
+    <div class="location" id="location">📍 Bangkok, Thailand</div>
+
+    <div class="flex">
+        <div class="dial-box">
+            <canvas id="tempDial" width="260" height="260"></canvas>
+            <div class="temp-value" id="currentTemp">-- °C</div>
+        </div>
+        <div class="stats">
+            <div class="stat-card"><div class="stat-value" id="total">0</div><div class="stat-label">Total Samples</div></div>
+            <div class="stat-card"><div class="stat-value" id="ripe">0</div><div class="stat-label">RIPE Samples</div></div>
+            <div class="stat-card"><div class="stat-value" id="rejection">0%</div><div class="stat-label">Rejection Rate</div></div>
+            <div class="stat-card"><div class="stat-value" id="energy">0 kWh</div><div class="stat-label">Energy Saved</div></div>
+        </div>
+    </div>
+
+    <div class="button-bar">
+        <button id="startBtn" class="start">▶ START</button>
+        <button id="testBtn" class="test">🔍 TEST</button>
+        <button id="resumeBtn" class="resume">⏸️ RESUME</button>
+        <button id="endBtn" class="end">⏹️ END</button>
+    </div>
+
+    <div class="log" id="log">Ready. Click START to begin.</div>
+    <footer>Quantum‑inspired filter · Ternary states · Recursive collapse · State memory</footer>
+</div>
+
+<script>
+    // ----- Quantum‑inspired isRipe() (recursive, ternary, stateful) -----
+    // Convert integer to ternary state (-1,0,+1) based on cycle
+    function intToTernary(value, cycle) {
+        const mod = (value + cycle) % 3;
+        if (mod === 0) return -1;
+        if (mod === 1) return 0;
+        return 1;
+    }
+
+    // Measure (collapse) – adds noise and returns amplitude
+    function measure(state, amplitude, cycle) {
+        const noise = Math.random() * 0.05; // small decoherence
+        return amplitude * (1 - noise) + (state / 3);
+    }
+
+    // Recursive quantum filter
+    function isRipeQuantum(value, depth, maxDepth, amplitudes) {
+        if (depth === 0) return true; // survived all cycles
+        
+        const cycle = maxDepth - depth;
+        const state = intToTernary(value, cycle);
+        let amplitude = (amplitudes && amplitudes[depth-1]) ? amplitudes[depth-1] : 1.0;
+        
+        const measured = measure(state, amplitude, cycle);
+        
+        // store amplitude for next cycle (state memory)
+        if (amplitudes) amplitudes[depth-1] = measured;
+        
+        // collapse: if amplitude too low, reject immediately
+        if (measured < 0.2) return false;
+        
+        // recursive call
+        return isRipeQuantum(value, depth - 1, maxDepth, amplitudes);
+    }
+
+    // Wrapper – creates fresh context for each value
+    function isRipe(value) {
+        const QUANTUM_CYCLES = 8;
+        let amplitudes = new Array(QUANTUM_CYCLES).fill(1.0);
+        return isRipeQuantum(value, QUANTUM_CYCLES, QUANTUM_CYCLES, amplitudes);
+    }
+
+    // ----- Round Dial Drawing -----
+    const canvas = document.getElementById('tempDial');
+    const ctx = canvas.getContext('2d');
+    const width = 260, height = 260;
+    canvas.width = width; canvas.height = height;
+
+    function drawDial(temp) {
+        ctx.clearRect(0, 0, width, height);
+        const cx = width/2, cy = height/2;
+        const radius = 110;
+        const startAngle = -0.85 * Math.PI;
+        const endAngle = 0.85 * Math.PI;
+        
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, startAngle, endAngle);
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 18;
+        ctx.stroke();
+        
+        let norm = Math.min(1, Math.max(0, (temp - 0) / 40));
+        const angle = startAngle + norm * (endAngle - startAngle);
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, startAngle, angle);
+        let gradient = ctx.createLinearGradient(cx-80, cy-80, cx+80, cy+80);
+        if (norm < 0.5) gradient.addColorStop(0, '#00f2fe');
+        else gradient.addColorStop(0, '#fbbf24');
+        if (norm > 0.8) gradient.addColorStop(1, '#ef4444');
+        ctx.strokeStyle = gradient;
+        ctx.stroke();
+        
+        const needleLen = radius - 20;
+        const needleX = cx + Math.cos(angle) * needleLen;
+        const needleY = cy + Math.sin(angle) * needleLen;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(needleX, needleY);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.arc(cx, cy, 8, 0, 2*Math.PI);
+        ctx.fillStyle = '#00f2fe';
+        ctx.fill();
+        ctx.fillStyle = '#010409';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 4, 0, 2*Math.PI);
+        ctx.fill();
+        
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText('-10°C', cx-80, cy+5);
+        ctx.fillText('40°C', cx+65, cy+5);
+    }
+
+    // ----- Dashboard State -----
+    let total = 0, ripeCount = 0;
+    let interval = null;
+    let running = false;
+    let paused = false;
+
+    const locationSpan = document.getElementById('location');
+    const tempSpan = document.getElementById('currentTemp');
+    const totalSpan = document.getElementById('total');
+    const ripeSpan = document.getElementById('ripe');
+    const rejectionSpan = document.getElementById('rejection');
+    const energySpan = document.getElementById('energy');
+    const logDiv = document.getElementById('log');
+
+    function addLog(msg) {
+        const p = document.createElement('div');
+        p.textContent = new Date().toLocaleTimeString() + ' > ' + msg;
+        logDiv.appendChild(p);
+        p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        while (logDiv.children.length > 100) logDiv.removeChild(logDiv.firstChild);
+    }
+
+    function updateUI() {
+        totalSpan.textContent = total;
+        ripeSpan.textContent = ripeCount;
+        const rate = total === 0 ? 0 : (1 - ripeCount / total) * 100;
+        rejectionSpan.textContent = rate.toFixed(2) + '%';
+        energySpan.textContent = (total * 0.00000001).toFixed(8) + ' kWh';
+    }
+
+    async function fetchWeather() {
+        if (!running || paused) return;
+        try {
+            const url = 'https://api.open-meteo.com/v1/forecast?latitude=13.736717&longitude=100.523186&current_weather=true';
+            const response = await fetch(url);
+            const data = await response.json();
+            const temp = data.current_weather.temperature;
+            tempSpan.textContent = temp + ' °C';
+            drawDial(temp);
+            
+            const scaled = Math.floor(temp * 100000);
+            total++;
+            const ripe = isRipe(scaled);
+            if (ripe) ripeCount++;
+            updateUI();
+            addLog(`${ripe ? '🎯 RIPE' : '❌ REJECTED'} temperature: ${temp}°C (scaled: ${scaled})`);
+        } catch(e) {
+            addLog('⚠️ Weather API error: ' + e.message);
+        }
+    }
+
+    function startStream() {
+        if (interval) clearInterval(interval);
+        running = true;
+        paused = false;
+        interval = setInterval(fetchWeather, 10000);
+        addLog('✅ Quantum stream started (every 10 seconds).');
+        fetchWeather();
+    }
+
+    function testOnce() {
+        if (interval) clearInterval(interval);
+        running = false;
+        paused = false;
+        fetchWeather().then(() => addLog('🔍 Single quantum test completed.'));
+    }
+
+    function resumeStream() {
+        if (!running || paused) {
+            paused = false;
+            running = true;
+            if (interval) clearInterval(interval);
+            interval = setInterval(fetchWeather, 10000);
+            addLog('▶️ Quantum stream resumed.');
+            fetchWeather();
+        }
+    }
+
+    function endStream() {
+        if (interval) clearInterval(interval);
+        running = false;
+        paused = false;
+        total = 0; ripeCount = 0;
+        updateUI();
+        tempSpan.textContent = '-- °C';
+        drawDial(0);
+        logDiv.innerHTML = '⏹️ Stream ended. Ready. Click START to begin.';
+        addLog('Stream reset.');
+    }
+
+    document.getElementById('startBtn').onclick = startStream;
+    document.getElementById('testBtn').onclick = testOnce;
+    document.getElementById('resumeBtn').onclick = resumeStream;
+    document.getElementById('endBtn').onclick = endStream;
+
+    drawDial(0);
+</script>
+</body>
+</html>
