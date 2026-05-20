@@ -1,92 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Sluice – Solar Micro-Grid PUE Optimizer</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #020617; font-family: 'Courier New', monospace; color: #f3f4f6; padding: 20px; }
-        .container { max-width: 1250px; margin: 0 auto; background: #0b1329; border-radius: 16px; padding: 24px; border: 2px solid #1f2937; box-shadow: 0 0 35px rgba(16, 185, 129, 0.15); }
-        h1 { color: #10b981; margin-bottom: 4px; font-size: 1.4rem; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
-        .system-banner { background: #022c22; border: 1px dashed #10b981; padding: 8px; font-size: 0.8rem; text-align: center; color: #34d399; margin-bottom: 20px; border-radius: 8px; font-weight: bold; }
-        .location { font-size: 1rem; color: #a1a1aa; margin-bottom: 20px; text-align: center; font-weight: bold; }
-        .flex { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: center; }
-        .dial-box { flex: 1; min-width: 260px; text-align: center; position: relative; }
-        canvas { background: #020617; border-radius: 50%; width: 250px; height: 250px; border: 1px solid #1f2937; }
-        .temp-value { font-size: 1.6rem; font-weight: bold; color: #00f2fe; margin-top: 12px; font-family: monospace; }
-        .stats { flex: 2; min-width: 300px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
-        .stat-card { background: #020617; border-radius: 12px; padding: 16px; text-align: center; border: 1px solid #1f2937; position: relative; }
-        .stat-value { font-size: 1.8rem; font-weight: bold; color: #00f2fe; }
-        .stat-label { font-size: 0.7rem; color: #94a3b8; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        /* Green Energy Progress Bars */
-        .progress-container { width: 100%; background-color: #1f2937; border-radius: 8px; margin-top: 8px; height: 12px; overflow: hidden; border: 1px solid #374151; }
-        .progress-bar { height: 100%; width: 100%; background: #10b981; transition: width 0.4s ease; box-shadow: 0 0 8px #10b981; }
-        
-        .log { background: #020617; border-radius: 12px; padding: 16px; height: 240px; overflow-y: auto; font-family: monospace; font-size: 0.75rem; border: 1px solid #1f2937; margin: 24px 0; color: #34d399; }
-        .button-bar { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 20px 0; }
-        button { border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-family: monospace; font-size: 0.85rem; font-weight: bold; transition: 0.2s; letter-spacing: 1px; }
-        .start { background: #10b981; color: #020617; }
-        .test { background: #fbbf24; color: #020617; }
-        .resume { background: #2563eb; color: white; }
-        .end { background: #dc2626; color: white; }
-        .geo-btn { background: #0f766e; color: white; width: 100%; margin-bottom: 12px; border-radius: 6px; }
-        footer { text-align: center; margin-top: 20px; font-size: 0.65rem; color: #4b5563; text-transform: uppercase; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1>⚡ Quantum Sluice Engine – Solar & Battery Micro-Grid</h1>
-    <div class="system-banner">☀️ OFF-GRID INFRASTRUCTURE MODE: AUTONOMOUS RENEWABLE BALANCING DISPATCH ENGAGED</div>
-    
-    <button id="geoBtn" class="geo-btn">🛰️ ALIGN MICRO-GRID HARVEST CHANNELS (GPS)</button>
-    <div class="location" id="location">📍 Micro-Grid Position: Baseline Core Terminal [13.7563°N, 100.5018°E]</div>
-
-    <div class="flex">
-        <div class="dial-box">
-            <canvas id="tempDial" width="250" height="250"></canvas>
-            <div class="temp-value" id="currentTemp">-- PUE</div>
-            <div style="font-size:0.65rem; color:#6b7280; text-transform:uppercase; letter-spacing:1px; margin-top:4px;">Power Usage Effectiveness Gauge</div>
-        </div>
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-value" id="total">0</div>
-                <div class="stat-label">Telemetry Cycles</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="rejection" style="color: #ef4444;">0.0%</div>
-                <div class="stat-label">Autonomous Workload Shed Rate</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="energy" style="color:#a78bfa;">0.00 MWh</div>
-                <div class="stat-label">Green Generation Offset</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="costSavings" style="color: #34d399;">$0.00</div>
-                <div class="stat-label">OPEX Energy Value Saved</div>
-            </div>
-            
-            <!-- NEW SOLAR AND BATTERY STORAGE MATRICES -->
-            <div class="stat-card">
-                <div class="stat-value" id="solarPower" style="color: #fbbf24;">0.0 kW</div>
-                <div class="stat-label">Solar Array Ingress</div>
-                <div class="progress-container"><div id="solarBar" class="progress-bar" style="width: 0%; background: #fbbf24; box-shadow: 0 0 8px #fbbf24;"></div></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="batterySoC" style="color: #10b981;">100%</div>
-                <div class="stat-label">Battery Storage Array (SoC)</div>
-                <div class="progress-container"><div id="batteryBar" class="progress-bar" style="width: 100%;"></div></div>
-            </div>
-            <div class="stat-card" style="grid-column: span 2;">
-                <div class="stat-value" id="thermalDrop" style="color: #00f2fe; font-size: 1.4rem;">0.0°C</div>
-                <div class="stat-label">Transient Workload Thermal Exhaust Shed</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="button-bar">
-        <button id="startBtn" class="start">▶ START GREEN TELEMETRY</button>
+"startBtn" class="start">▶ START GREEN TELEMETRY</button>
         <button id="testBtn" class="test">🔍 ARRAY PROBE</button>
         <button id="resumeBtn" class="resume">⏸️ STALL CORES</button>
         <button id="endBtn" class="end">⏹️ FLUSH SYSTEM</button>
@@ -133,22 +45,7 @@
         ctx.stroke();
     }
 
-    let totalCycles = 0, optimizedCount = 0;
-    let mainLoopInterval = null;
-    let isProcessing = false;
-    let nodeLat = 13.7563, nodeLon = 100.5018;
-    
-    // Core Battery Bank & Solar Tracking Elements
-    let batteryChargeState = 100.0;
-    const POWER_RATE_PER_MWH = 100.00;
-
-    const locationSpan = document.getElementById('location');
-    const pueValueSpan = document.getElementById('currentTemp');
-    const totalSpan = document.getElementById('total');
-    const rejectionSpan = document.getElementById('rejection');
-    const energySpan = document.getElementById('energy');
-    const costSavingsSpan = document.getElementById('costSavings');
-    
+    let totalCycles = 0, 
     // Microgrid Elements Connections
     const solarPowerSpan = document.getElementById('solarPower');
     const solarBar = document.getElementById('solarBar');
@@ -219,31 +116,7 @@
         if (isInfrastructureStable) {
             optimizedCount++;
             // Strong solar power charges battery cells up smoothly
-            batteryChargeState = Math.min(100.0, batteryChargeState + (liveSolarIngressKW * 0.012));
-            activeThermalShed = parseFloat((1.5 + Math.random() * 2.5).toFixed(1));
-            writeConsoleLog(`STABLE OPERATIONS: ${targetedCluster} processing cleanly. Array PUE safe at ${calculatedPUE}.`, "ok");
-        } else {
-            // Processing thermal spike or low battery reserves forces your algorithm to shed workload tasks
-            // Shedding current drops current demand, draining less energy out of your battery cells
-            batteryChargeState = Math.max(15.0, batteryChargeState - (isBatteryStarved ? 1.5 : 4.5));
-            activeThermalShed = parseFloat((12.1 + Math.random() * 3.8).toFixed(1));
-            
-            if (isBatteryStarved) {
-                writeConsoleLog(`🚨 LOW RESERVES DETECTED: Battery at ${batteryChargeState.toFixed(1)}%. Software forced emergency WORKLOAD SHED to extend runtime!`, "err");
-            } else {
-                writeConsoleLog(`⚠️ THERMAL MITIGATION SHED: PUE Spike (${calculatedPUE}) logged on ${targetedCluster}. Shedding current overhead.`, "err");
-            }
-        }
-
-        // Live-update structural telemetry gauges
-        totalSpan.textContent = totalCycles;
-        
-        const currentCalculatedShedRate = ((totalCycles - optimizedCount) / totalCycles) * 100;
-        rejectionSpan.textContent = currentCalculatedShedRate.toFixed(1) + '%';
-        
-        const megawattHoursSaved = optimizedCount * 0.1425; 
-        energySpan.textContent = megawattHoursSaved.toFixed(3) + ' MWh';
-
+            batteryChargeState = Math.min(
         // OPEX Cost Conversion Tracking
         const monetaryEquivalentSaved = megawattHoursSaved * POWER_RATE_PER_MWH;
         costSavingsSpan.textContent = `$${monetaryEquivalentSaved.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -275,10 +148,7 @@
     document.getElementById('resumeBtn').onclick = () => {
         if (isProcessing) {
             isProcessing = false;
-            writeConsoleLog("Automated balancing loops suspended.", "err");
-        } else {
-            isProcessing = true;
-            writeConsoleLog("Re-engaging dynamic off-grid asset channels...", "ok");
+            writeConsynamic off-grid asset channels...", "ok");
             executeOptimizationPass();
         }
     };
@@ -298,8 +168,7 @@
         batteryBar.style.background = "#10b981";
         thermalDropSpan.textContent = '0.0°C';
         pueValueSpan.textContent = '-- PUE';
-        drawPueDial(1.0);
-        logDiv.innerHTML = "Micro-grid registries flushed. Controllers returned to static configurations.";
+        drawPueDial(1.0);rid registries flushed. Controllers returned to static configurations.";
     };
 
     drawPueDial(1.0);
