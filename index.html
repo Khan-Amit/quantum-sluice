@@ -1,7 +1,105 @@
-"startBtn" class="start">▶ START GREEN TELEMETRY</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Sluice – Solar Micro-Grid PUE Optimizer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #020617; font-family: 'Courier New', monospace; color: #f3f4f6; padding: 20px; }
+        .container { max-width: 1250px; margin: 0 auto; background: #0b1329; border-radius: 16px; padding: 24px; border: 2px solid #1f2937; box-shadow: 0 0 35px rgba(16, 185, 129, 0.15); }
+        h1 { color: #10b981; margin-bottom: 4px; font-size: 1.4rem; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
+        .system-banner { background: #022c22; border: 1px dashed #10b981; padding: 8px; font-size: 0.8rem; text-align: center; color: #34d399; margin-bottom: 20px; border-radius: 8px; font-weight: bold; }
+        .location { font-size: 1rem; color: #a1a1aa; margin-bottom: 12px; text-align: center; font-weight: bold; }
+        
+        /* Interactive Hardware Selection Profiles Selector */
+        .profile-selector { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; }
+        .profile-btn { background: #1f2937; border: 1px solid #374151; color: #94a3b8; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: monospace; font-size: 0.8rem; font-weight: bold; transition: 0.2s; }
+        .profile-btn.active { background: #0f766e; border-color: #00f2fe; color: #ffffff; box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); }
+        
+        .flex { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: center; }
+        .dial-box { flex: 1; min-width: 260px; text-align: center; position: relative; }
+        canvas { background: #020617; border-radius: 50%; width: 250px; height: 250px; border: 1px solid #1f2937; }
+        .temp-value { font-size: 1.6rem; font-weight: bold; color: #00f2fe; margin-top: 12px; font-family: monospace; }
+        .stats { flex: 2; min-width: 300px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+        .stat-card { background: #020617; border-radius: 12px; padding: 16px; text-align: center; border: 1px solid #1f2937; position: relative; }
+        .stat-value { font-size: 1.8rem; font-weight: bold; color: #00f2fe; }
+        .stat-label { font-size: 0.7rem; color: #94a3b8; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .progress-container { width: 100%; background-color: #1f2937; border-radius: 8px; margin-top: 8px; height: 12px; overflow: hidden; border: 1px solid #374151; }
+        .progress-bar { height: 100%; width: 100%; background: #10b981; transition: width 0.4s ease; box-shadow: 0 0 8px #10b981; }
+        
+        .log { background: #020617; border-radius: 12px; padding: 16px; height: 240px; overflow-y: auto; font-family: monospace; font-size: 0.75rem; border: 1px solid #1f2937; margin: 24px 0; color: #34d399; }
+        .button-bar { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 20px 0; }
+        button { border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-family: monospace; font-size: 0.85rem; font-weight: bold; transition: 0.2s; letter-spacing: 1px; }
+        .start { background: #10b981; color: #020617; }
+        .test { background: #fbbf24; color: #020617; }
+        .resume { background: #2563eb; color: white; }
+        .end { background: #dc2626; color: white; }
+        .geo-btn { background: #0f766e; color: white; width: 100%; margin-bottom: 12px; border-radius: 6px; }
+        footer { text-align: center; margin-top: 20px; font-size: 0.65rem; color: #4b5563; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⚡ Quantum Sluice Engine – Solar & Battery Micro-Grid</h1>
+    <div class="system-banner">☀️ OFF-GRID INFRASTRUCTURE MODE: AUTONOMOUS RENEWABLE BALANCING DISPATCH ENGAGED</div>
+    
+    <!-- INTERACTIVE CONFIGURATION PROFILE PANEL -->
+    <div class="profile-selector">
+        <button id="profileAir" class="profile-btn active">💨 CONVENTIONAL AIR-COOLED PROFILE</button>
+        <button id="profileLiquid" class="profile-btn">💧 DIRECT-TO-CHIP LIQUID PRO</button>
+    </div>
+
+    <button id="geoBtn" class="geo-btn">🛰️ ALIGN MICRO-GRID HARVEST CHANNELS (GPS)</button>
+    <div class="location" id="location">📍 Micro-Grid Position: Baseline Core Terminal [13.7563°N, 100.5018°E]</div>
+
+    <div class="flex">
+        <div class="dial-box">
+            <canvas id="tempDial" width="250" height="250"></canvas>
+            <div class="temp-value" id="currentTemp">-- PUE</div>
+            <div style="font-size:0.65rem; color:#6b7280; text-transform:uppercase; letter-spacing:1px; margin-top:4px;">Power Usage Effectiveness Gauge</div>
+        </div>
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="total">0</div>
+                <div class="stat-label">Telemetry Cycles (Lifetime)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="rejection" style="color: #ef4444;">0.0%</div>
+                <div class="stat-label">Autonomous Workload Shed Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="energy" style="color:#a78bfa;">0.00 MWh</div>
+                <div class="stat-label">Lifetime Green Offset</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="costSavings" style="color: #34d399;">$0.00</div>
+                <div class="stat-label">Lifetime OPEX Savings</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value" id="solarPower" style="color: #fbbf24;">0.0 kW</div>
+                <div class="stat-label">Solar Array Ingress</div>
+                <div class="progress-container"><div id="solarBar" class="progress-bar" style="width: 0%; background: #fbbf24; box-shadow: 0 0 8px #fbbf24;"></div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="batterySoC" style="color: #10b981;">100%</div>
+                <div class="stat-label">Battery Storage Array (SoC)</div>
+                <div class="progress-container"><div id="batteryBar" class="progress-bar" style="width: 100%;"></div></div>
+            </div>
+            <div class="stat-card" style="grid-column: span 2;">
+                <div class="stat-value" id="thermalDrop" style="color: #00f2fe; font-size: 1.4rem;">0.0°C</div>
+                <div class="stat-label">Transient Workload Thermal Exhaust Shed</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-bar">
+        <button id="startBtn" class="start">▶ START GREEN TELEMETRY</button>
         <button id="testBtn" class="test">🔍 ARRAY PROBE</button>
         <button id="resumeBtn" class="resume">⏸️ STALL CORES</button>
-        <button id="endBtn" class="end">⏹️ FLUSH SYSTEM</button>
+        <button id="endBtn" class="end">⏹️ CLEAR STORAGE CACHE</button>
     </div>
 
     <div class="log" id="log">Renewable array links synchronized. Press START to coordinate localized solar metrics with deep computing loads.</div>
@@ -45,14 +143,41 @@
         ctx.stroke();
     }
 
-    let totalCycles = 0, 
-    // Microgrid Elements Connections
+    // ----- GLOBAL CORE VARIABLES (PERSISTENT DATA LAYER STRUCTURE) ----- [1]
+    let totalCycles = parseInt(localStorage.getItem('qs_totalCycles')) || 0;
+    let optimizedCount = parseInt(localStorage.getItem('qs_optimizedCount')) || 0;
+    let lifetimeMWhSaved = parseFloat(localStorage.getItem('qs_lifetimeMWh')) || 0.0;
+    
+    let coolingProfileMode = "AIR"; // Toggle state variable: "AIR" or "LIQUID" [1]
+    let batteryChargeState = 100.0;
+    let mainLoopInterval = null;
+    let isProcessing = false;
+    let nodeLat = 13.7563, nodeLon = 100.5018;
+    
+    const POWER_RATE_PER_MWH = 100.00;
+
+    const locationSpan = document.getElementById('location');
+    const pueValueSpan = document.getElementById('currentTemp');
+    const totalSpan = document.getElementById('total');
+    const rejectionSpan = document.getElementById('rejection');
+    const energySpan = document.getElementById('energy');
+    const costSavingsSpan = document.getElementById('costSavings');
     const solarPowerSpan = document.getElementById('solarPower');
     const solarBar = document.getElementById('solarBar');
     const batterySoCSpan = document.getElementById('batterySoC');
     const batteryBar = document.getElementById('batteryBar');
     const thermalDropSpan = document.getElementById('thermalDrop');
     const logDiv = document.getElementById('log');
+
+    // UI Initialization from persistent storage cache
+    function initSavedMetricsOnUI() {
+        totalSpan.textContent = totalCycles;
+        energySpan.textContent = lifetimeMWhSaved.toFixed(3) + ' MWh';
+        const initialCost = lifetimeMWhSaved * POWER_RATE_PER_MWH;
+        costSavingsSpan.textContent = `$${initialCost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        const initialShedRate = totalCycles === 0 ? 0 : ((totalCycles - optimizedCount) / totalCycles) * 100;
+        rejectionSpan.textContent = initialShedRate.toFixed(1) + '%';
+    }
 
     function writeConsoleLog(msg, statusClass = "") {
         const line = document.createElement('div');
@@ -63,9 +188,24 @@
         line.scrollIntoView({ behavior: 'smooth' });
     }
 
+    // ----- TRACK INTERACTIVE HARDWARE SWITCHES ----- [1]
+    document.getElementById('profileAir').onclick = function() {
+        coolingProfileMode = "AIR";
+        this.classList.add('active');
+        document.getElementById('profileLiquid').classList.remove('active');
+        writeConsoleLog("Hardware targeting parameters reset to Conventional Air-Cooling. (Expected baseline PUE ceiling: 1.80)", "normal");
+    };
+
+    document.getElementById('profileLiquid').onclick = function() {
+        coolingProfileMode = "LIQUID";
+        this.classList.add('active');
+        document.getElementById('profileAir').classList.remove('active');
+        writeConsoleLog("Hardware targeting parameters optimized to Direct-To-Chip Liquid Loop. (Expected baseline PUE ceiling: 1.25)", "ok");
+    };
+
     document.getElementById('geoBtn').onclick = () => {
         if (navigator.geolocation) {
-            locationSpan.textContent = "📡 Re-aligning photovolatic array orientation vectors...";
+            locationSpan.textContent = "📡 Re-aligning photovoltaic array orientation vectors...";
             navigator.geolocation.getCurrentPosition((pos) => {
                 nodeLat = pos.coords.latitude;
                 nodeLon = pos.coords.longitude;
@@ -91,23 +231,29 @@
 
         totalCycles++;
 
-        // Track live weather data to change simulated generation metrics
-        // In real microgrids, colder days increase solar panel conversion efficiency performance
         const liveSolarIngressKW = Math.max(0, parseFloat((450.0 - (outsideTemp * 4.5) + (Math.random() * 60.0)).toFixed(1)));
         const solarPercentage = Math.min(100, (liveSolarIngressKW / 550.0) * 100);
         
         solarPowerSpan.textContent = liveSolarIngressKW + ' kW';
         solarBar.style.width = solarPercentage + '%';
 
-        // Infrastructure tracking adjustments
-        const calculatedPUE = parseFloat((1.04 + (outsideTemp * 0.024) + (Math.random() * 0.03)).toFixed(3));
+        // ----- HARDWARE MODELLING ALGORITHM SEPARATION ----- [1]
+        let calculatedPUE = 1.0;
+        if (coolingProfileMode === "LIQUID") {
+            // Liquid systems operate tightly close to perfect physical conversion baseline values
+            calculatedPUE = parseFloat((1.02 + (outsideTemp * 0.005) + (Math.random() * 0.02)).toFixed(3));
+        } else {
+            // Conventional air-cooled structures swell significantly due to massive mechanical fan overhead pressures
+            calculatedPUE = parseFloat((1.12 + (outsideTemp * 0.021) + (Math.random() * 0.04)).toFixed(3));
+        }
+
         pueValueSpan.textContent = calculatedPUE + ' PUE';
         drawPueDial(calculatedPUE);
 
-        // ADVANCED AUTONOMOUS ENERGY DESPATCH ALGORITHM:
-        // If local battery banks decline below 65%, your software automatically forces a heavy load-shed step to protect battery state of charge.
+        // Adjust thresholds dynamically per profile style constraints
+        const PUE_THRESHOLD = coolingProfileMode === "LIQUID" ? 1.25 : 1.62;
         const isBatteryStarved = batteryChargeState < 65.0;
-        const isInfrastructureStable = calculatedPUE < 1.62 && !isBatteryStarved;
+        const isInfrastructureStable = calculatedPUE < PUE_THRESHOLD && !isBatteryStarved;
         
         const frameworks = ["DeepSeek-V3 Matrix Core", "ChatGPT-4o Inference Bank", "Google Gemini Ultra Grid"];
         const targetedCluster = frameworks[Math.floor(Math.random() * frameworks.length)];
@@ -115,13 +261,40 @@
 
         if (isInfrastructureStable) {
             optimizedCount++;
-            // Strong solar power charges battery cells up smoothly
-            batteryChargeState = Math.min(
-        // OPEX Cost Conversion Tracking
-        const monetaryEquivalentSaved = megawattHoursSaved * POWER_RATE_PER_MWH;
+            batteryChargeState = Math.min(100.0, batteryChargeState + (liveSolarIngressKW * 0.012));
+            activeThermalShed = parseFloat((1.5 + Math.random() * 2.5).toFixed(1));
+            
+            // Increment saved volumes safely
+            lifetimeMWhSaved += 0.1425;
+            
+            writeConsoleLog(`STABLE COMPUTE: [${coolingProfileMode} MODE] ${targetedCluster} balanced. Array PUE safe at ${calculatedPUE}.`, "ok");
+        } else {
+            // Drains significantly slower if using liquid architecture profiles
+            const batteryDrainFactor = coolingProfileMode === "LIQUID" ? 1.8 : 4.5;
+            batteryChargeState = Math.max(15.0, batteryChargeState - (isBatteryStarved ? 1.2 : batteryDrainFactor));
+            activeThermalShed = parseFloat((12.1 + Math.random() * 3.8).toFixed(1));
+            
+            if (isBatteryStarved) {
+                writeConsoleLog(`🚨 LOW RESERVES DETECTED: Battery at ${batteryChargeState.toFixed(1)}%. Automated WORKLOAD SHED active!`, "err");
+            } else {
+                writeConsoleLog(`⚠️ THERMAL BOUNDARY SHED: PUE Overhead (${calculatedPUE}) logged on ${targetedCluster}. Shedding processing queues.`, "err");
+            }
+        }
+
+        // ----- COMMITTING TO PHONE HARDWARE PERSISTENT STORAGE ----- [1]
+        localStorage.setItem('qs_totalCycles', totalCycles);
+        localStorage.setItem('qs_optimizedCount', optimizedCount);
+        localStorage.setItem('qs_lifetimeMWh', lifetimeMWhSaved);
+
+        // UI Updates
+        totalSpan.textContent = totalCycles;
+        const currentCalculatedShedRate = ((totalCycles - optimizedCount) / totalCycles) * 100;
+        rejectionSpan.textContent = currentCalculatedShedRate.toFixed(1) + '%';
+        
+        energySpan.textContent = lifetimeMWhSaved.toFixed(3) + ' MWh';
+        const monetaryEquivalentSaved = lifetimeMWhSaved * POWER_RATE_PER_MWH;
         costSavingsSpan.textContent = `$${monetaryEquivalentSaved.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-        // Update Battery Matrix Gauges
         batterySoCSpan.textContent = batteryChargeState.toFixed(1) + '%';
         batteryBar.style.width = batteryChargeState + '%';
         if (batteryChargeState > 65.0) batteryBar.style.background = "#10b981";
@@ -133,7 +306,7 @@
 
     document.getElementById('startBtn').onclick = () => {
         isProcessing = true;
-        writeConsoleLog("Engaging off-grid autonomous energy balance pipelines...", "ok");
+        writeConsoleLog(`Engaging off-grid microgrid calculations in [${coolingProfileMode} PROFILE] mode...`, "ok");
         if (mainLoopInterval) clearInterval(mainLoopInterval);
         executeOptimizationPass();
         mainLoopInterval = setInterval(executeOptimizationPass, 4000); 
@@ -141,22 +314,30 @@
 
     document.getElementById('testBtn').onclick = () => {
         isProcessing = true;
-        writeConsoleLog("Triggering singular micro-grid verification transaction pass...");
+        writeConsoleLog("Triggering verification check diagnostic pass...");
         executeOptimizationPass().then(() => isProcessing = false);
     };
 
     document.getElementById('resumeBtn').onclick = () => {
         if (isProcessing) {
             isProcessing = false;
-            writeConsynamic off-grid asset channels...", "ok");
+            writeConsoleLog("Automated balancing loops suspended.", "err");
+        } else {
+            isProcessing = true;
+            writeConsoleLog("Re-engaging operational asset channels...", "ok");
             executeOptimizationPass();
         }
     };
 
+    // Resets cache completely back to zeros
     document.getElementById('endBtn').onclick = () => {
         if (mainLoopInterval) clearInterval(mainLoopInterval);
         isProcessing = false;
-        totalCycles = 0; optimizedCount = 0; batteryChargeState = 100.0;
+        
+        // Wipe local device memory cache logs [1]
+        localStorage.clear();
+        totalCycles = 0; optimizedCount = 0; lifetimeMWhSaved = 0.0; batteryChargeState = 100.0;
+        
         totalSpan.textContent = '0';
         rejectionSpan.textContent = '0.0%';
         energySpan.textContent = '0.00 MWh';
@@ -168,9 +349,12 @@
         batteryBar.style.background = "#10b981";
         thermalDropSpan.textContent = '0.0°C';
         pueValueSpan.textContent = '-- PUE';
-        drawPueDial(1.0);rid registries flushed. Controllers returned to static configurations.";
+        drawPueDial(1.0);
+        logDiv.innerHTML = "Persistent app memory wiped clean. Platform registers reset to absolute zero.";
     };
 
+    // Execute storage check instantly upon page load
+    initSavedMetricsOnUI();
     drawPueDial(1.0);
 </script>
 </body>
