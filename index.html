@@ -1,5 +1,22 @@
-1f2937; border: 1px solid #374151; color: #94a3b8; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: monospace; font-size: 0.8rem; font-weight: bold; transition: 0.2s; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Sluice – Solar Micro-Grid PUE Optimizer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #020617; font-family: 'Courier New', monospace; color: #f3f4f6; padding: 20px; }
+        .container { max-width: 1250px; margin: 0 auto; background: #0b1329; border-radius: 16px; padding: 24px; border: 2px solid #1f2937; box-shadow: 0 0 35px rgba(16, 185, 129, 0.15); }
+        h1 { color: #10b981; margin-bottom: 4px; font-size: 1.4rem; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
+        .system-banner { background: #022c22; border: 1px dashed #10b981; padding: 8px; font-size: 0.8rem; text-align: center; color: #34d399; margin-bottom: 20px; border-radius: 8px; font-weight: bold; }
+        .location { font-size: 1rem; color: #a1a1aa; margin-bottom: 12px; text-align: center; font-weight: bold; }
+        
+        /* Profile Selectors Extended for Thermal Absorption Design Layout */
+        .profile-selector { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 24px; }
+        .profile-btn { background: #1f2937; border: 1px solid #374151; color: #94a3b8; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-family: monospace; font-size: 0.75rem; font-weight: bold; transition: 0.2s; flex: 1; min-width: 250px; }
         .profile-btn.active { background: #0f766e; border-color: #00f2fe; color: #ffffff; box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); }
+        .profile-btn.absorption.active { background: #b45309; border-color: #fbbf24; box-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
         
         .flex { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: center; }
         .dial-box { flex: 1; min-width: 260px; text-align: center; position: relative; }
@@ -21,7 +38,74 @@
         .resume { background: #2563eb; color: white; }
         .end { background: #dc2626; color: white; }
         .geo-btn { background: #0f766e; color: white; width: 100%; margin-bottom: 12px; border-radius: 6px; }
-        footer { 
+        footer { text-align: center; margin-top: 20px; font-size: 0.65rem; color: #4b5563; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⚡ Quantum Sluice Engine – Solar & Battery Micro-Grid</h1>
+    <div class="system-banner">☀️ OFF-GRID INFRASTRUCTURE MODE: AUTONOMOUS RENEWABLE BALANCING DISPATCH ENGAGED</div>
+    
+    <div class="profile-selector">
+        <button id="profileAir" class="profile-btn">💨 CONVENTIONAL AIR-COOLED PROFILE</button>
+        <button id="profileLiquid" class="profile-btn">💧 DIRECT-TO-CHIP LIQUID PRO</button>
+        <button id="profileAbsorption" class="profile-btn absorption active">🔥 PVT SOLAR THERMAL ABSORPTION LOOP</button>
+    </div>
+
+    <button id="geoBtn" class="geo-btn">🛰️ ALIGN MICRO-GRID HARVEST CHANNELS (GPS)</button>
+    <div class="location" id="location">📍 Micro-Grid Position: Baseline Core Terminal [13.8164°N, 100.5649°E]</div>
+
+    <div class="flex">
+        <div class="dial-box">
+            <canvas id="tempDial" width="250" height="250"></canvas>
+            <div class="temp-value" id="currentTemp">-- PUE</div>
+            <div style="font-size:0.65rem; color:#6b7280; text-transform:uppercase; letter-spacing:1px; margin-top:4px;">Power Usage Effectiveness Gauge</div>
+        </div>
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="total">0</div>
+                <div class="stat-label">Telemetry Cycles (Lifetime)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="rejection" style="color: #ef4444;">0.0%</div>
+                <div class="stat-label">Autonomous Workload Shed Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="energy" style="color:#a78bfa;">0.00 MWh</div>
+                <div class="stat-label">Lifetime Green Offset</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="costSavings" style="color: #34d399;">$0.00</div>
+                <div class="stat-label">Lifetime OPEX Savings</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value" id="solarPower" style="color: #fbbf24;">0.0 kW</div>
+                <div class="stat-label">Solar Array Ingress</div>
+                <div class="progress-container"><div id="solarBar" class="progress-bar" style="width: 0%; background: #fbbf24; box-shadow: 0 0 8px #fbbf24;"></div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="batterySoC" style="color: #10b981;">100%</div>
+                <div class="stat-label">Battery Storage Array (SoC)</div>
+                <div class="progress-container"><div id="batteryBar" class="progress-bar" style="width: 100%;"></div></div>
+            </div>
+            <div class="stat-card" style="grid-column: span 2;">
+                <div class="stat-value" id="thermalDrop" style="color: #00f2fe; font-size: 1.4rem;">0.0°C</div>
+                <div class="stat-label">Transient Workload Thermal Exhaust Shed</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-bar">
+        <button id="startBtn" class="start">▶ START GREEN TELEMETRY</button>
+        <button id="testBtn" class="test">🔍 ARRAY PROBE</button>
+        <button id="resumeBtn" class="resume">⏸️ STALL CORES</button>
+        <button id="endBtn" class="end">⏹️ CLEAR STORAGE CACHE</button>
+    </div>
+
+    <div class="log" id="log">Renewable array links synchronized. Press START to coordinate localized solar metrics with deep computing loads.</div>
+    <footer>Industrial Enterprise Framework · Real-Time Grid Data Ingestion Core</footer>
+</div>
 
 <script>
     const canvas = document.getElementById('tempDial');
@@ -45,7 +129,9 @@
         ctx.beginPath();
         ctx.arc(cx, cy, radius, startAngle, angle);
         let gradient = ctx.createLinearGradient(40, 40, 210, 210);
-        gradient.addColorStop(0, '#10b981'); 
+        
+        if (pue < 1.1) gradient.addColorStop(0, '#00f2fe'); // Sub-zero chill color anchor
+        else gradient.addColorStop(0, '#10b981'); 
         gradient.addColorStop(0.5, '#fbbf24');
         gradient.addColorStop(1, '#ef4444'); 
         ctx.strokeStyle = gradient;
@@ -64,11 +150,11 @@
     let optimizedCount = parseInt(localStorage.getItem('qs_optimizedCount')) || 0;
     let lifetimeMWhSaved = parseFloat(localStorage.getItem('qs_lifetimeMWh')) || 0.0;
     
-    let coolingProfileMode = "AIR"; 
+    let coolingProfileMode = "ABSORPTION"; // Defaulting directly to your custom childhood thermal setup
     let batteryChargeState = 100.0;
     let mainLoopInterval = null;
     let isProcessing = false;
-    let nodeLat = 13.8164, nodeLon = 100.5649; // Updated map coordinates from your current GPS profile
+    let nodeLat = 13.8164, nodeLon = 100.5649;
     
     const POWER_RATE_PER_MWH = 100.00;
 
@@ -107,6 +193,7 @@
         coolingProfileMode = "AIR";
         this.classList.add('active');
         document.getElementById('profileLiquid').classList.remove('active');
+        document.getElementById('profileAbsorption').classList.remove('active');
         writeConsoleLog("Targeting parameters set to Air-Cooling. (Expected PUE ceiling: 1.80)", "normal");
     };
 
@@ -114,7 +201,16 @@
         coolingProfileMode = "LIQUID";
         this.classList.add('active');
         document.getElementById('profileAir').classList.remove('active');
+        document.getElementById('profileAbsorption').classList.remove('active');
         writeConsoleLog("Targeting parameters optimized to Direct-To-Chip Liquid Loop. (Expected PUE ceiling: 1.25)", "ok");
+    };
+
+    document.getElementById('profileAbsorption').onclick = function() {
+        coolingProfileMode = "ABSORPTION";
+        this.classList.add('active');
+        document.getElementById('profileAir').classList.remove('active');
+        document.getElementById('profileLiquid').classList.remove('active');
+        writeConsoleLog("🔥 PVT ABSORPTION LOOP ACTIVE: Harnessing thermal radiation from panel backplanes to power ammonia refrigeration loops. Parasitic cooling power drops to zero!", "ok");
     };
 
     document.getElementById('geoBtn').onclick = () => {
@@ -145,24 +241,35 @@
 
         totalCycles++;
 
-        const liveSolarIngressKW = Math.max(0, parseFloat((450.0 - (outsideTemp * 4.5) + (Math.random() * 60.0)).toFixed(1)));
-        const solarPercentage = Math.min(100, (liveSolarIngressKW / 550.0) * 100);
+        // PVT THERMAL BONUS MECHANIC:
+        // In absorption mode, drawing heat away from panels lowers their cell temperatures, boosting electrical conversion efficiency output by 15%
+        let baseSolarIngressKW = Math.max(0, parseFloat((450.0 - (outsideTemp * 4.5) + (Math.random() * 60.0)).toFixed(1)));
+        if (coolingProfileMode === "ABSORPTION") {
+            baseSolarIngressKW = parseFloat((baseSolarIngressKW * 1.15).toFixed(1)); 
+        }
+        const solarPercentage = Math.min(100, (baseSolarIngressKW / 550.0) * 100);
         
-        solarPowerSpan.textContent = liveSolarIngressKW + ' kW';
+        solarPowerSpan.textContent = baseSolarIngressKW + ' kW';
         solarBar.style.width = solarPercentage + '%';
 
         let calculatedPUE = 1.0;
-        if (coolingProfileMode === "LIQUID") {
+        if (coolingProfileMode === "ABSORPTION") {
+            // Perfect thermodynamic loop: PUE drops down incredibly low because chiller electrical load equals exactly zero
+            calculatedPUE = parseFloat((1.002 + (outsideTemp * 0.001) + (Math.random() * 0.005)).toFixed(3));
+        } else if (coolingProfileMode === "LIQUID") {
             calculatedPUE = parseFloat((1.02 + (outsideTemp * 0.005) + (Math.random() * 0.02)).toFixed(3));
         } else {
-            // Generates high air-cooling variations matching your screenshot bounds
             calculatedPUE = parseFloat((1.42 + (outsideTemp * 0.012) + (Math.random() * 0.05)).toFixed(3));
         }
 
         pueValueSpan.textContent = calculatedPUE + ' PUE';
         drawPueDial(calculatedPUE);
 
-        const PUE_THRESHOLD = coolingProfileMode === "LIQUID" ? 1.25 : 1.62;
+        // Map dynamic safety thresholds per mode constraints
+        let PUE_THRESHOLD = 1.62;
+        if (coolingProfileMode === "LIQUID") PUE_THRESHOLD = 1.25;
+        if (coolingProfileMode === "ABSORPTION") PUE_THRESHOLD = 1.05;
+
         const isBatteryStarved = batteryChargeState < 65.0;
         const isInfrastructureStable = calculatedPUE < PUE_THRESHOLD && !isBatteryStarved;
         
@@ -170,22 +277,28 @@
         const targetedCluster = frameworks[Math.floor(Math.random() * frameworks.length)];
         let activeThermalShed = 0;
 
-        // FIXED CONTINUOUS ECHO LOGIC: 
-        // Your algorithm earns money both ways. When stable, it saves energy. 
-        // When forced to execute load-shedding during high peaks, it prevents massive billing surges by throttling.
         if (isInfrastructureStable) {
             optimizedCount++;
-            batteryChargeState = Math.min(100.0, batteryChargeState + (liveSolarIngressKW * 0.014));
-            activeThermalShed = parseFloat((1.5 + Math.random() * 2.5).toFixed(1));
-            lifetimeMWhSaved += 0.1425; // Base optimization tier value
-            writeConsoleLog(`STABLE COMPUTE: [${coolingProfileMode} MODE] ${targetedCluster} balanced. Array PUE safe at ${calculatedPUE}.`, "ok");
-        } else {
-            const batteryDrainFactor = coolingProfileMode === "LIQUID" ? 1.5 : 4.2;
-            batteryChargeState = Math.max(15.0, batteryChargeState - (isBatteryStarved ? 1.0 : batteryDrainFactor));
-            activeThermalShed = parseFloat((12.1 + Math.random() * 3.8).toFixed(1));
             
-            // Earns an alternative avoidance cost increment even during load shed intervals
-            lifetimeMWhSaved += 0.0875; 
+            // Solar absorption charges batteries faster because panels run highly efficient and chillers consume zero storage juice
+            const chargingCoefficient = coolingProfileMode === "ABSORPTION" ? 0.022 : 0.014;
+            batteryChargeState = Math.min(100.0, batteryChargeState + (baseSolarIngressKW * chargingCoefficient));
+            activeThermalShed = parseFloat((1.5 + Math.random() * 2.5).toFixed(1));
+            
+            // Maximum savings yield multiplier in absorption loop mode
+            lifetimeMWhSaved += coolingProfileMode === "ABSORPTION" ? 0.2250 : 0.1425; 
+            
+            writeConsoleLog(`STABLE COMPUTE: [${coolingProfileMode} MODE] ${targetedCluster} operational. PUE locked at ${calculatedPUE}.`, "ok");
+        } else {
+            // Drains significantly slower if using liquid, drops to virtually zero drain penalty in thermal absorption loops
+            let batteryDrainFactor = 4.2;
+            if (coolingProfileMode === "LIQUID") batteryDrainFactor = 1.5;
+            if (coolingProfileMode === "ABSORPTION") batteryDrainFactor = 0.2; 
+            
+            batteryChargeState = Math.max(15.0, batteryChargeState - (isBatteryStarved ? 1.0 : batteryDrainFactor));
+            activeThermalShed = parseFloat((14.5 + Math.random() * 5.0).toFixed(1));
+            
+            lifetimeMWhSaved += coolingProfileMode === "ABSORPTION" ? 0.1650 : 0.0875; 
             
             if (isBatteryStarved) {
                 writeConsoleLog(`🚨 LOW RESERVES: Battery at ${batteryChargeState.toFixed(1)}%. Autonomous WORKLOAD SHED active!`, "err");
@@ -194,12 +307,10 @@
             }
         }
 
-        // Save progress to storage partition
         localStorage.setItem('qs_totalCycles', totalCycles);
         localStorage.setItem('qs_optimizedCount', optimizedCount);
         localStorage.setItem('qs_lifetimeMWh', lifetimeMWhSaved);
 
-        // Update UI Display Elements
         totalSpan.textContent = totalCycles;
         const currentCalculatedShedRate = ((totalCycles - optimizedCount) / totalCycles) * 100;
         rejectionSpan.textContent = currentCalculatedShedRate.toFixed(1) + '%';
