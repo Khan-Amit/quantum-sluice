@@ -1,36 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NASA Rack Integration – Command Node</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #030712; font-family: 'Courier New', monospace; color: #f3f4f6; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; background: #0b1329; border-radius: 16px; padding: 24px; border: 2px solid #1f2937; box-shadow: 0 0 30px rgba(0, 242, 254, 0.15); }
-        h1 { color: #00f2fe; margin-bottom: 4px; font-size: 1.4rem; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
-        .system-banner { background: #111827; border: 1px dashed #3b82f6; padding: 8px; font-size: 0.8rem; text-align: center; color: #3b82f6; margin-bottom: 20px; border-radius: 8px; }
-        .location { font-size: 1rem; color: #a1a1aa; margin-bottom: 20px; text-align: center; }
-        .flex { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: center; }
-        .dial-box { flex: 1; min-width: 260px; text-align: center; position: relative; }
-        canvas { background: #020617; border-radius: 50%; width: 260px; height: 260px; border: 1px solid #1f2937; }
-        .temp-value { font-size: 1.6rem; font-weight: bold; color: #ef4444; margin-top: 12px; font-family: monospace; }
-        .stats { flex: 2; min-width: 300px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; }
-        .stat-card { background: #020617; border-radius: 12px; padding: 16px; text-align: center; border: 1px solid #1f2937; position: relative; }
-        .stat-value { font-size: 1.8rem; font-weight: bold; color: #00f2fe; }
-        .stat-label { font-size: 0.7rem; color: #94a3b8; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .rack-grid { display: flex; gap: 6px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
-        .rack-unit { width: 14px; height: 14px; background: #111827; border: 1px solid #374151; border-radius: 2px; transition: 0.3s; }
-        .rack-unit.active { background: #10b981; box-shadow: 0 0 8px #10b981; }
-        .rack-unit.stressed { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
-        .rack-unit.failed { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
-        .log { background: #020617; border-radius: 12px; padding: 16px; height: 220px; overflow-y: auto; font-family: monospace; font-size: 0.75rem; border: 1px solid #1f2937; margin: 24px 0; color: #34d399; }
-        .button-bar { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 20px 0; }
-        button { border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-family: monospace; font-size: 0.85rem; font-weight: bold; transition: 0.2s; letter-spacing: 1px; }
-        .start { background: #00f2fe; color: #020617; }
-        .test { background: #fbbf24; color: #020617; }
-        .resume { background: #2563eb; color: white; }
-        .end { background: #dc2626; color: white; }
+ { background: #dc2626; color: white; }
         .geo-btn { background: #059669; color: white; width: 100%; margin-bottom: 12px; border-radius: 6px; }
         footer { text-align: center; margin-top: 20px; font-size: 0.65rem; color: #4b5563; text-transform: uppercase; }
     </style>
@@ -220,15 +188,7 @@
             rejectionSpan.textContent = tripPercentage.toFixed(1) + '%';
             
             const calculatedSavings = ripeCount * 0.0142; 
-            energySpan.textContent = calculatedSavings.toFixed(3) + ' kWh';
-            
-            updateRackHardwareVisuals(tripPercentage);
-            
-        } catch(ex) {
-            writeConsoleLog(`Gateway handshake failed: ${ex.message}. Retrying stack network pipeline.`, "err");
-        }
-    }
-
+            energySpan.textContent = calculatedSavings.
     // Controls
     document.getElementById('startBtn').onclick = () => {
         isProcessing = true;
@@ -266,9 +226,7 @@
         rpmValueSpan.textContent = '-- RPM';
         drawFanDial(1000);
         updateRackHardwareVisuals(0);
-        logDiv.innerHTML = "System emergency flush completed. Hardware configuration idle.";
-    };
-
+        logDiv.innerHTML = "System emergency flush completed. Hardware configuration
     drawFanDial(1000);
 </script>
 </body>
